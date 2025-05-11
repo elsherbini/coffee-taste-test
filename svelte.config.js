@@ -22,6 +22,13 @@ const config = {
 		}),
 		paths: {
 			base: process.env.NODE_ENV === 'production' ? '/coffee-taste-test' : ''
+		},
+		prerender: {
+			handleHttpError: ({ path, referrer, message }) => {
+				// Ignore 404s that happen during prerendering
+				if (message.includes('Not found')) return;
+				console.warn(`${path} referred from ${referrer} - ${message}`);
+			}
 		}
 	}
 };
