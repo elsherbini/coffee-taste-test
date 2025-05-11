@@ -73,7 +73,7 @@
     <div class="flex flex-col gap-4">
         <div class="card p-6 variant-filled-primary">
             <h2 class="h3 mb-4">Coffee Taste Test</h2>
-            <p class="mb-4">Rate and evaluate specific coffee samples based on taste characteristics.</p>
+            <p class="mb-4">Rate the coffees we are tasting today</p>
             <a href="/taste-test" class="btn variant-filled-surface">
                 Start Taste Test
             </a>
