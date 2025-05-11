@@ -1,38 +1,32 @@
-# sv
+# Coffee Taste Test
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A web application for conducting coffee preference surveys and taste tests.
 
-## Creating a project
+## About
 
-If you're seeing this, you've probably already done this step. Congrats!
+This project is designed to collect data about coffee preferences and facilitate blind taste tests. Built with modern web technologies:
+
+- SvelteKit - Front-end framework
+- Skeleton UI - Component library
+- Tailwind CSS - Utility-first styling
+- Google Forms - Data collection backend
+
+## Features
+
+- Coffee preference survey collection
+- Blind taste test facilitation
+- Data submission to Google Forms
+- Responsive design for all devices
+
+## Development
 
 ```bash
-# create a new project in the current directory
-npx sv create
+# Install dependencies
+npm install
 
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
+# Start development server
 npm run dev
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
+# Build for production
 npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+``` 
