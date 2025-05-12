@@ -97,7 +97,7 @@
                 };
                 
                 // Send data to our API endpoint
-                const response = await fetch('/.netlify/functions/index/api/submit-taste-test', {
+                const response = await fetch('/.netlify/functions/server/api/submit-taste-test', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -148,7 +148,6 @@
                 setTimeout(() => {
                     flashVisible = false;
                 }, 2000);
-            } finally {
                 isSubmitting = false;
             }
         }
