@@ -245,64 +245,30 @@
         if (isSubmitting) return;
         
         isSubmitting = true;
-        flashVisible = false;
         
-        // Make a GET request to the prefilled Google Form link
+        // Navigate to Google Form directly
         if (browser) {
             try {
-                const response = await fetch(prefilledLink);
-                const data = await response.text();
-                console.log('Response from form submission:', response.status, response.statusText);
-                console.log('Response data:', data.substring(0, 100) + '...'); // Log first 100 chars
+                // Create the form URL
+                const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLScEqPRm9qKfdgCpRz1WbjQoO5xLLRtwnp2eUMY5TXxeZGWklQ/formResponse?usp=pp_url&entry.649444699=${userId}&entry.1827359057=${preference}&entry.70561061=${coffeeFrequency}&entry.465256553=${coffeesPerDay}&entry.1432820961=${teasPerDay}&entry.1544061021=${otherCaffeinatedDrinks}&entry.2016949479=${blackCoffee}&entry.461709431=${drinkDecaf}&entry.270068699=${selectedAdditions}&entry.1869977587=${selectedCoffeeTypes}&entry.1035930586=${roastPreference}&entry.558699320=${selectedReasons}&entry.1572246610=${selectedLimitReasons}&submit=Submit`;
                 
-                if (response.status === 200) {
-                    isSuccess = true;
-                    flashVisible = true;
-                    hasSubmitted = true;
-                    
-                    // Save submission status to localStorage
-                    localStorage.setItem('coffee-preference-submitted', 'true');
-                    
-                    // Show success toast
-                    toaster.success({
-                        title: 'Form submitted successfully!',
-                        description: 'Your coffee preferences have been recorded.'
-                    });
-                    
-                    // Hide flash after a delay
-                    setTimeout(() => {
-                        flashVisible = false;
-                    }, 1500);
-                } else {
-                    isSuccess = false;
-                    flashVisible = true;
-                    
-                    // Show error toast
-                    toaster.error({
-                        title: 'Submission Error',
-                        description: 'Error submitting form. Please try again.'
-                    });
-                    
-                    // Hide flash after a delay
-                    setTimeout(() => {
-                        flashVisible = false;
-                    }, 1500);
-                }
+                // Mark as submitted before navigation
+                hasSubmitted = true;
+                
+                // Save submission status to localStorage
+                localStorage.setItem('coffee-preference-submitted', 'true');
+                
+                // Navigate to form
+                window.location.href = formUrl;
+                
             } catch (error) {
-                console.error('Error submitting form:', error);
-                isSuccess = false;
-                flashVisible = true;
+                console.error('Error opening form:', error);
                 
                 // Show error toast
                 toaster.error({
-                    title: 'Network Error',
-                    description: 'Check your connection and try again.'
+                    title: 'Error',
+                    description: 'Could not open the form. Please try again.'
                 });
-                
-                // Hide flash after a delay
-                setTimeout(() => {
-                    flashVisible = false;
-                }, 1500);
             } finally {
                 isSubmitting = false;
             }
