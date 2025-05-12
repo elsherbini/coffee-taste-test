@@ -1,0 +1,5 @@
+# Handle SPA routing and API endpoints
+/* /.netlify/functions/render 200
+
+# Handle API routes specifically
+/api/* /.netlify/functions/render 200 
