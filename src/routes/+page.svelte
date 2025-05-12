@@ -2,6 +2,7 @@
     import { browser } from '$app/environment';
     import { Rating } from '@skeletonlabs/skeleton-svelte';
     import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
     // Generate a random user ID
     function generateUserId(): string {
@@ -74,7 +75,7 @@
         <div class="card p-6 variant-filled-primary">
             <h2 class="h3 mb-4">Coffee Taste Test</h2>
             <p class="mb-4">Rate the coffees we are tasting today</p>
-            <a href="/taste-test" class="btn variant-filled-surface">
+            <a href="{base}/taste-test" class="btn variant-filled-surface">
                 Start Taste Test
             </a>
         </div>
@@ -82,7 +83,7 @@
         <div class="card p-6 variant-filled-secondary">
             <h2 class="h3 mb-4">Coffee Preference Survey</h2>
             <p class="mb-4">Tell us about your general coffee preferences and habits.</p>
-            <a href="/preference-survey" class="btn variant-filled-surface">
+            <a href="{base}/preference-survey" class="btn variant-filled-surface">
                 Start Preference Survey
             </a>
         </div>
