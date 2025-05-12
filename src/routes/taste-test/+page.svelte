@@ -236,7 +236,7 @@
                         <div class="block sm:hidden">
                             <Segment 
                                 value={aftertaste} 
-                                onValueChange={(e) => setAftertaste(e.value)} 
+                                onValueChange={(e) => setAftertaste(e.value as string)} 
                                 orientation="vertical"
                             >
                                 {#each aftertasteOptions as a}
