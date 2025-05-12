@@ -246,29 +246,80 @@
         
         isSubmitting = true;
         
-        // Navigate to Google Form directly
         if (browser) {
             try {
-                // Create the form URL
-                const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLScEqPRm9qKfdgCpRz1WbjQoO5xLLRtwnp2eUMY5TXxeZGWklQ/formResponse?usp=pp_url&entry.649444699=${userId}&entry.1827359057=${preference}&entry.70561061=${coffeeFrequency}&entry.465256553=${coffeesPerDay}&entry.1432820961=${teasPerDay}&entry.1544061021=${otherCaffeinatedDrinks}&entry.2016949479=${blackCoffee}&entry.461709431=${drinkDecaf}&entry.270068699=${selectedAdditions}&entry.1869977587=${selectedCoffeeTypes}&entry.1035930586=${roastPreference}&entry.558699320=${selectedReasons}&entry.1572246610=${selectedLimitReasons}&submit=Submit`;
+                // Create form data object with all our values
+                const formData = {
+                    userId,
+                    preference,
+                    coffeeFrequency,
+                    coffeesPerDay,
+                    teasPerDay,
+                    otherCaffeinatedDrinks,
+                    blackCoffee,
+                    drinkDecaf,
+                    selectedAdditions,
+                    selectedCoffeeTypes,
+                    roastPreference,
+                    selectedReasons,
+                    selectedLimitReasons,
+                    timestamp: new Date().toISOString()
+                };
                 
-                // Mark as submitted before navigation
-                hasSubmitted = true;
+                // Send data to our API endpoint
+                const response = await fetch('/api/submit-preference-survey', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
                 
-                // Save submission status to localStorage
-                localStorage.setItem('coffee-preference-submitted', 'true');
-                
-                // Navigate to form
-                window.location.href = formUrl;
-                
+                if (response.ok) {
+                    // Show success message
+                    isSuccess = true;
+                    flashVisible = true;
+                    hasSubmitted = true;
+                    
+                    toaster.success({
+                        title: 'Success',
+                        description: 'Your preferences have been submitted!'
+                    });
+                    
+                    // Save submission status to localStorage
+                    localStorage.setItem('coffee-preference-submitted', 'true');
+                    
+                    setTimeout(() => {
+                        flashVisible = false;
+                    }, 2000);
+                } else {
+                    // Show error message
+                    isSuccess = false;
+                    flashVisible = true;
+                    
+                    toaster.error({
+                        title: 'Error',
+                        description: 'Failed to submit form. Please try again.'
+                    });
+                    
+                    setTimeout(() => {
+                        flashVisible = false;
+                    }, 2000);
+                }
             } catch (error) {
-                console.error('Error opening form:', error);
+                console.error('Error submitting form:', error);
                 
                 // Show error toast
                 toaster.error({
                     title: 'Error',
-                    description: 'Could not open the form. Please try again.'
+                    description: 'Could not submit the form. Please try again.'
                 });
+                
+                isSuccess = false;
+                flashVisible = true;
+                setTimeout(() => {
+                    flashVisible = false;
+                }, 2000);
             } finally {
                 isSubmitting = false;
             }

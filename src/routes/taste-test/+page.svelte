@@ -80,23 +80,74 @@
         
         isSubmitting = true;
         
-        // Navigate to Google Form directly
         if (browser) {
             try {
-                // Create a local string URL
-                const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSdUU_4nttpp5a15pp2T9bQqDAkiSSGaHx4MZJzvhp9r_zjmRA/viewform?usp=pp_url&entry.1794639938=${userId}&entry.1599024898=${coffee}&entry.1824965704=${bitterness}&entry.671551337=${sweetness}&entry.272037129=${acidity}&entry.1154026105=${body}&entry.832944999=${aftertaste}&entry.1596012011=${tastingNotes}&entry.354662826=${quality}`;
+                // Create form data object with all our values
+                const formData = {
+                    userId,
+                    coffee,
+                    bitterness,
+                    sweetness,
+                    acidity,
+                    body,
+                    aftertaste,
+                    tastingNotes,
+                    quality,
+                    timestamp: new Date().toISOString()
+                };
                 
-                // Open the form URL in a new tab
-                window.location.href = formUrl;
+                // Send data to our API endpoint
+                const response = await fetch('/api/submit-taste-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
                 
+                if (response.ok) {
+                    // Show success message
+                    isSuccess = true;
+                    flashVisible = true;
+                    
+                    toaster.success({
+                        title: 'Success',
+                        description: 'Your taste test has been submitted!'
+                    });
+                    
+                    // Reset the form after successful submission
+                    setTimeout(() => {
+                        resetForm();
+                        flashVisible = false;
+                    }, 2000);
+                } else {
+                    // Show error message
+                    isSuccess = false;
+                    flashVisible = true;
+                    
+                    toaster.error({
+                        title: 'Error',
+                        description: 'Failed to submit form. Please try again.'
+                    });
+                    
+                    setTimeout(() => {
+                        flashVisible = false;
+                    }, 2000);
+                }
             } catch (error) {
-                console.error('Error opening form:', error);
+                console.error('Error submitting form:', error);
                 
                 // Show error toast
                 toaster.error({
                     title: 'Error',
-                    description: 'Could not open the form. Please try again.'
+                    description: 'Could not submit the form. Please try again.'
                 });
+                
+                isSuccess = false;
+                flashVisible = true;
+                setTimeout(() => {
+                    flashVisible = false;
+                }, 2000);
             } finally {
                 isSubmitting = false;
             }
