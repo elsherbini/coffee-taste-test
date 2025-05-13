@@ -10,9 +10,9 @@ const config = {
 	kit: {
 		// Use Netlify adapter for better integration
 		adapter: adapter({
-			// Add adapter options for server-side functions
+			// Update adapter options for better API handling
 			edge: false,
-			split: false
+			split: true
 		}),
 		paths: {
 			// Remove GitHub Pages specific base path

@@ -267,7 +267,7 @@
                 };
                 
                 // Send data to our API endpoint
-                const response = await fetch('/api/submit-preference-survey', {
+                const response = await fetch('/.netlify/functions/submit-preference-survey', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
