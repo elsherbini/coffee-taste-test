@@ -342,8 +342,8 @@
     
     {#if hasSubmitted}
         <div class="card p-6 variant-glass-surface" transition:scale={{ duration: 300 }}>
-            <h2 class="h3 mb-4">Thank You!</h2>
-            <p class="mb-4">Your coffee preferences have been recorded. Thank you for participating in our survey!</p>
+            <h2 class="h3 mb-4">Success!</h2>
+            <p class="mb-4">Your coffee preferences have been recorded.</p>
             <div class="flex gap-4">
                 <a href="/" class="btn variant-filled-surface">Back to Home</a>
                 <button type="button" class="btn variant-ghost" onclick={() => hasSubmitted = false}>Edit Response</button>
@@ -589,9 +589,6 @@
             </div>
         </form>
     {/if}
-</div>
-<div class="text-xs">
-    {prefilledLink}
 </div>
 <style>
     /* Add any custom styles here if needed */
