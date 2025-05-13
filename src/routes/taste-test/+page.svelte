@@ -4,9 +4,26 @@
     import { fade, fly, scale } from 'svelte/transition';
     import { flip } from 'svelte/animate';
     import { Toaster, createToaster } from '@skeletonlabs/skeleton-svelte';
+    import { onMount } from 'svelte';
 
     // Initialize the toaster
     const toaster = createToaster();
+
+    // Store for completed tests
+    type CoffeeTest = {
+        coffee: string;
+        bitterness: number;
+        acidity: number;
+        sweetness: number;
+        quality: number;
+        tastingNotes: string;
+        body: string;
+        aftertaste: string;
+        timestamp: string;
+    };
+
+    let completedTests = $state<Record<string, CoffeeTest>>({});
+    let isAlreadyTested = $state(false);
 
     // Generate a random user ID
     function generateUserId(): string {
@@ -46,6 +63,25 @@
     let flashVisible = $state(false);
     let isSuccess = $state(false);
 
+    // Load completed tests from localStorage on mount
+    onMount(() => {
+        if (browser) {
+            const storedTests = localStorage.getItem('completed-coffee-tests');
+            if (storedTests) {
+                completedTests = JSON.parse(storedTests);
+            }
+        }
+    });
+
+    // Use $effect to keep isAlreadyTested in sync with completedTests and coffee
+    $effect(() => {
+        if (coffee) {
+            isAlreadyTested = completedTests[coffee] !== undefined;
+        } else {
+            isAlreadyTested = false;
+        }
+    });
+
     function setBody(selectedBody: string) {
         body = selectedBody;
     }
@@ -60,6 +96,28 @@
     function setSelectedCoffee(selectedCoffee: string) {
         coffee = selectedCoffee;
         coffeeSelected = true;
+        isSubmitting = false; // Reset submission state when changing coffees
+        
+        // If already tested, load the previous results
+        if (completedTests[selectedCoffee]) {
+            const test = completedTests[selectedCoffee];
+            bitterness = test.bitterness;
+            acidity = test.acidity;
+            sweetness = test.sweetness;
+            quality = test.quality;
+            tastingNotes = test.tastingNotes;
+            body = test.body;
+            aftertaste = test.aftertaste;
+        } else {
+            // Reset values for a new test
+            bitterness = 0;
+            acidity = 0;
+            sweetness = 0;
+            quality = 0;
+            tastingNotes = '';
+            body = bodyOptions[0];
+            aftertaste = aftertasteOptions[0];
+        }
     }
 
     // Reset form to initial state
@@ -76,7 +134,7 @@
     }
 
     async function handleSubmit() {
-        if (isSubmitting || !coffeeSelected) return;
+        if (isSubmitting || !coffeeSelected || isAlreadyTested) return;
         
         isSubmitting = true;
         
@@ -106,6 +164,22 @@
                 });
                 
                 if (response.ok) {
+                    // Store the test in local storage
+                    isSubmitting = false;
+                    completedTests[coffee] = {
+                        coffee,
+                        bitterness,
+                        sweetness,
+                        acidity,
+                        body,
+                        aftertaste,
+                        tastingNotes,
+                        quality,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem('completed-coffee-tests', JSON.stringify(completedTests));
+                    
                     // Show success message
                     isSuccess = true;
                     flashVisible = true;
@@ -115,10 +189,10 @@
                         description: 'Your taste test has been submitted!'
                     });
                     
-                    // Reset the form after successful submission
+                    // Just mark as submitted, but don't reset the form
                     setTimeout(() => {
-                        resetForm();
                         flashVisible = false;
+                        isSubmitting = false;
                     }, 2000);
                 } else {
                     // Show error message
@@ -132,6 +206,7 @@
                     
                     setTimeout(() => {
                         flashVisible = false;
+                        isSubmitting = false;
                     }, 2000);
                 }
             } catch (error) {
@@ -169,10 +244,11 @@
                 <label class="h3 mb-4">Select Coffee Sample to Test</label>
                 <div class="flex flex-wrap gap-2 mt-4">
                     {#each coffeeOptions as c}
+                        <!-- Change color for tested coffees -->
                         <button 
                             type="button" 
-                            class={`btn ${coffee === c ? 'preset-gradient' : 'preset-outlined-primary-500'}`} 
-                            on:click={() => setSelectedCoffee(c)}
+                            class={`btn ${coffee === c ? 'preset-gradient' : completedTests[c] ? 'preset-gradient-success' : 'preset-outlined-primary-500'}`} 
+                            onclick={() => setSelectedCoffee(c)}
                         >
                             <span>{c}</span>
                         </button>
@@ -185,34 +261,44 @@
         {#if coffeeSelected}
             <div transition:scale={{ duration: 300, start: 0.95 }}>
                 <div class="card p-6 variant-glass-surface space-y-6">
-                    <h2 class="h3">Evaluating Coffee {coffee}</h2>
+                    <h2 class="h3">
+                        Evaluating Coffee {coffee}
+                        {#if isAlreadyTested}
+                            <span class="badge variant-filled-success">Already Tested</span>
+                        {/if}
+                    </h2>
 
                     <div class="form-group">
-                        <label class="label">
+                        <label class="label" for="bitterness">
                             Bitterness{bitterness > 0 ? ` ${bitterness}/5` : ''}
                         </label>
-                        <Rating allowHalf value={bitterness} onValueChange={(e) => (bitterness = e.value)} />
+                        <Rating allowHalf value={bitterness} onValueChange={(e) => !isAlreadyTested && (bitterness = e.value)} />
                     </div>
                     
                     <div class="form-group">
-                        <label class="label">
+                        <label class="label" for="acidity">
                             Acidity{acidity > 0 ? ` ${acidity}/5` : ''}
                         </label>
-                        <Rating allowHalf value={acidity} onValueChange={(e) => (acidity = e.value)} />
+                        <Rating allowHalf value={acidity} onValueChange={(e) => !isAlreadyTested && (acidity = e.value)} />
                     </div>
                     
                     <div class="form-group">
-                        <label class="label">
+                        <label class="label" for="sweetness">
                             Sweetness{sweetness > 0 ? ` ${sweetness}/5` : ''}
                         </label>
-                        <Rating allowHalf value={sweetness} onValueChange={(e) => (sweetness = e.value)} />
+                        <Rating allowHalf value={sweetness} onValueChange={(e) => !isAlreadyTested && (sweetness = e.value)} />
                     </div>
                     
                     <div class="form-group">
-                        <label class="label">Body</label>
+                        <label class="label" for="body">Body</label>
                         <div class="flex gap-2">
                             {#each bodyOptions as b}
-                                <button type="button" class={`chip capitalize ${body === b ? 'preset-gradient' : 'preset-outlined-primary-500'}`} on:click={() => setBody(b)}>
+                                <button 
+                                    type="button" 
+                                    class={`chip capitalize ${body === b ? 'preset-gradient' : 'preset-outlined-primary-500'}`} 
+                                    onclick={() => setBody(b)}
+                                    disabled={isAlreadyTested}
+                                >
                                     <span>{b}</span>
                                 </button>
                             {/each}
@@ -220,12 +306,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="label">Aftertaste</label>
+                        <label class="label" for="aftertaste">Aftertaste</label>
                         <!-- Horizontal on medium/large screens, vertical on small screens -->
                         <div class="hidden sm:block">
                             <div class="flex gap-2">
                                 {#each aftertasteOptions as a}
-                                    <button type="button" class={`chip capitalize ${aftertaste === a ? 'preset-gradient' : 'preset-outlined-primary-500'}`} on:click={() => setAftertaste(a)}>
+                                    <button 
+                                        type="button" 
+                                        class={`chip capitalize ${aftertaste === a ? 'preset-gradient' : 'preset-outlined-primary-500'}`} 
+                                        onclick={() => setAftertaste(a)}
+                                        disabled={isAlreadyTested}
+                                    >
                                         <span>{a}</span>
                                     </button>
                                 {/each}
@@ -235,8 +326,9 @@
                         <div class="block sm:hidden">
                             <Segment 
                                 value={aftertaste} 
-                                onValueChange={(e) => setAftertaste(e.value as string)} 
+                                onValueChange={(e) => !isAlreadyTested && e.value && setAftertaste(e.value)} 
                                 orientation="vertical"
+                                disabled={isAlreadyTested}
                             >
                                 {#each aftertasteOptions as a}
                                     <Segment.Item value="{a}">{a}</Segment.Item>
@@ -246,22 +338,28 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="label">
+                        <label class="label" for="quality">
                             Overall Quality{quality > 0 ? ` ${quality}/5` : ''}
                         </label>
-                        <Rating allowHalf value={quality} onValueChange={(e) => (quality = e.value)} />
+                        <Rating allowHalf value={quality} onValueChange={(e) => !isAlreadyTested && (quality = e.value)} />
                     </div>
                     
                     <div class="form-group">
-                        <label class="label">Tasting Notes</label>
-                        <textarea bind:value={tastingNotes} class="textarea" rows="3" placeholder="Enter any additional notes"></textarea>
+                        <label class="label" for="tastingNotes">Tasting Notes</label>
+                        <textarea 
+                            bind:value={tastingNotes} 
+                            class="textarea" 
+                            rows="3" 
+                            placeholder="Enter any additional notes"
+                            disabled={isAlreadyTested}
+                        ></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label class="label">Change Coffee Selection</label>
+                        <label class="label" for="changeCoffeeSelection">Change Coffee Selection</label>
                         <div class="flex gap-2 items-center">
                             <span class="text-sm">Currently testing: <strong>Coffee {coffee}</strong></span>
-                            <select class="select" bind:value={coffee}>
+                            <select class="select" bind:value={coffee} onchange={() => setSelectedCoffee(coffee)}>
                                 {#each coffeeOptions as c}
                                     <option value={c}>Coffee {c}</option>
                                 {/each}
@@ -273,11 +371,11 @@
                         <div class="relative">
                             <button 
                                 type="button" 
-                                class="btn preset-gradient" 
-                                on:click={handleSubmit}
-                                disabled={isSubmitting}
+                                class="btn {isAlreadyTested ? 'preset-ghost-neutral' : 'preset-gradient'}" 
+                                onclick={handleSubmit}
+                                disabled={isSubmitting || isAlreadyTested}
                             >
-                                {isSubmitting ? 'Submitting...' : 'Submit'}
+                                {isSubmitting ? 'Submitting...' : isAlreadyTested ? 'Already Submitted' : 'Submit'}
                             </button>
                             
                             {#if flashVisible}
@@ -287,7 +385,13 @@
                                 ></div>
                             {/if}
                         </div>
-                        <button type="button" class="btn preset-outlined-primary-500" on:click={resetForm}>Reset</button>
+                        <button 
+                            type="button" 
+                            class="btn preset-outlined-primary-500" 
+                            onclick={resetForm}
+                        >
+                            Reset
+                        </button>
                     </div>
                 </div>
             </div>
