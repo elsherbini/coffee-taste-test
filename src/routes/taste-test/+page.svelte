@@ -97,7 +97,7 @@
                 };
                 
                 // Send data to our API endpoint
-                const response = await fetch('/.netlify/functions/server/api/submit-taste-test', {
+                const response = await fetch('/api/submit-taste-test', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
