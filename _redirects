@@ -1,1 +1,3 @@
+/api/submit-preference-survey /.netlify/functions/sveltekit-api-submit-preference-survey 200
+/api/submit-taste-test /.netlify/functions/sveltekit-api-submit-taste-test 200
 /* /index.html 200
