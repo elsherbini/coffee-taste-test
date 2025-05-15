@@ -1,6 +1,6 @@
 <script lang="ts">
     import { browser } from '$app/environment';
-    import { Rating, Segment } from '@skeletonlabs/skeleton-svelte';
+    import { Rating, Segment, TagsInput } from '@skeletonlabs/skeleton-svelte';
     import { fade, fly, scale } from 'svelte/transition';
     import { flip } from 'svelte/animate';
     import { Toaster, createToaster } from '@skeletonlabs/skeleton-svelte';
@@ -16,7 +16,7 @@
         acidity: number;
         sweetness: number;
         quality: number;
-        tastingNotes: string;
+        tastingNotes: string[];
         body: string;
         aftertaste: string;
         timestamp: string;
@@ -49,7 +49,7 @@
     let acidity = $state(0);
     let sweetness = $state(0);
     let quality = $state(0);
-    let tastingNotes = '';
+    let tastingNotes = $state<string[]>([]);
     
     const bodyOptions = ['Light', 'Medium', 'Heavy'];
     let body = $state(bodyOptions[0]);
@@ -114,7 +114,7 @@
             acidity = 0;
             sweetness = 0;
             quality = 0;
-            tastingNotes = '';
+            tastingNotes = [];
             body = bodyOptions[0];
             aftertaste = aftertasteOptions[0];
         }
@@ -126,7 +126,7 @@
         acidity = 0;
         sweetness = 0;
         quality = 0;
-        tastingNotes = '';
+        tastingNotes = [];
         body = bodyOptions[0];
         coffee = '';
         coffeeSelected = false;
@@ -346,13 +346,12 @@
                     
                     <div class="form-group">
                         <label class="label" for="tastingNotes">Tasting Notes</label>
-                        <textarea 
-                            bind:value={tastingNotes} 
-                            class="textarea" 
-                            rows="3" 
-                            placeholder="Enter any additional notes"
+                        <TagsInput 
+                            value={tastingNotes} 
+                            onValueChange={(e) => !isAlreadyTested && (tastingNotes = e.value)}
+                            placeholder="Add tasting note..."
                             disabled={isAlreadyTested}
-                        ></textarea>
+                        />
                     </div>
                     
                     <div class="form-group">
