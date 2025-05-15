@@ -5,6 +5,7 @@
     import { flip } from 'svelte/animate';
     import { Toaster, createToaster } from '@skeletonlabs/skeleton-svelte';
     import { onMount } from 'svelte';
+    import FlavorWheel from '$lib/components/FlavorWheel.svelte';
 
     // Initialize the toaster
     const toaster = createToaster();
@@ -229,6 +230,12 @@
     }
     
     let prefilledLink = $derived(`https://docs.google.com/forms/d/e/1FAIpQLSdUU_4nttpp5a15pp2T9bQqDAkiSSGaHx4MZJzvhp9r_zjmRA/viewform?usp=pp_url&entry.1794639938=${userId}&entry.1599024898=${coffee}&entry.1824965704=${bitterness}&entry.671551337=${sweetness}&entry.272037129=${acidity}&entry.1154026105=${body}&entry.832944999=${aftertaste}&entry.1596012011=${tastingNotes}&entry.354662826=${quality}`)
+
+    function handleFlavorSelect(flavor: string) {
+        if (!isAlreadyTested && !tastingNotes.includes(flavor)) {
+            tastingNotes = [...tastingNotes, flavor];
+        }
+    }
 </script>
 
 <!-- Add the Toaster component at the top level -->
@@ -346,12 +353,20 @@
                     
                     <div class="form-group">
                         <label class="label" for="tastingNotes">Tasting Notes</label>
-                        <TagsInput 
+                        <div class="space-y-4">
+
+                            <div class="card p-4 variant-glass-surface">
+                                <h3 class="h4 mb-4">Coffee Flavor Wheel</h3>
+                                <p class="text-sm mb-4">Click on flavors in the wheel to add them as tasting notes</p>
+                                <FlavorWheel onFlavorSelect={handleFlavorSelect} />
+                            </div>
+                            <TagsInput 
                             value={tastingNotes} 
                             onValueChange={(e) => !isAlreadyTested && (tastingNotes = e.value)}
                             placeholder="Add tasting note..."
                             disabled={isAlreadyTested}
                         />
+                        </div>
                     </div>
                     
                     <div class="form-group">
