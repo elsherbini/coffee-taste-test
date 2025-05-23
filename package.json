@@ -13,8 +13,9 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"dependencies": {
+		"@types/echarts": "^4.9.22",
 		"echarts": "^5.4.3",
-		"@types/echarts": "^4.9.22"
+		"echarts-wordcloud": "^2.1.0"
 	},
 	"devDependencies": {
 		"@skeletonlabs/skeleton": "^3.1.3",

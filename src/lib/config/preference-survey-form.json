@@ -1,0 +1,18 @@
+{
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLScEqPRm9qKfdgCpRz1WbjQoO5xLLRtwnp2eUMY5TXxeZGWklQ/formResponse",
+  "fieldMappings": {
+    "userId": "entry.649444699",
+    "preference": "entry.1827359057",
+    "coffeeFrequency": "entry.70561061",
+    "coffeesPerDay": "entry.465256553",
+    "teasPerDay": "entry.1432820961",
+    "otherCaffeinatedDrinks": "entry.1544061021",
+    "blackCoffee": "entry.2016949479",
+    "drinkDecaf": "entry.461709431",
+    "selectedAdditions": "entry.270068699",
+    "selectedCoffeeTypes": "entry.1869977587",
+    "roastPreference": "entry.1035930586",
+    "selectedReasons": "entry.558699320",
+    "selectedLimitReasons": "entry.1572246610"
+  }
+} 

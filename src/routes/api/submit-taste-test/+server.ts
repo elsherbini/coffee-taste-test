@@ -1,42 +1,34 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import formConfigData from '$lib/config/taste-test-form.json';
+import type { FormConfig } from '$lib/types/form-config';
+
+// Cast the imported JSON to our FormConfig type
+const formConfig: FormConfig = formConfigData as FormConfig;
 
 export const POST: RequestHandler = async ({ request }) => {
     try {
         // Parse the incoming JSON data
         const formData = await request.json();
         
-        // Extract all the form fields
-        const { 
-            userId, 
-            coffee, 
-            bitterness, 
-            sweetness, 
-            acidity, 
-            body, 
-            aftertaste, 
-            tastingNotes, 
-            quality 
-        } = formData;
-        
-        // Create the Google Forms URL with query parameters
-        const googleFormUrl = `https://docs.google.com/forms/d/e/1FAIpQLSdUU_4nttpp5a15pp2T9bQqDAkiSSGaHx4MZJzvhp9r_zjmRA/formResponse`;
-        
-        // Prepare the form data for Google Forms
+        // Create URLSearchParams for Google Forms
         const params = new URLSearchParams();
-        params.append('entry.1794639938', userId);
-        params.append('entry.1599024898', coffee);
-        params.append('entry.1824965704', bitterness.toString());
-        params.append('entry.671551337', sweetness.toString());
-        params.append('entry.272037129', acidity.toString());
-        params.append('entry.1154026105', body);
-        params.append('entry.832944999', aftertaste);
-        params.append('entry.1596012011', tastingNotes);
-        params.append('entry.354662826', quality.toString());
+        
+        // Extract all the form fields and map them to Google Form entry IDs
+        Object.entries(formData).forEach(([field, value]) => {
+            const entryId = formConfig.fieldMappings[field];
+            if (entryId) {
+                // Convert all values to string
+                params.append(entryId, String(value));
+            } else {
+                console.warn(`No mapping found for field: ${field}`);
+            }
+        });
+        
         params.append('submit', 'Submit');
         
-        // Send the data to Google Forms
-        const response = await fetch(googleFormUrl, {
+        // Send the data to Google Forms using the URL from config
+        const response = await fetch(formConfig.formUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

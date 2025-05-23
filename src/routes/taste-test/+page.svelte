@@ -13,13 +13,13 @@
     // Store for completed tests
     type CoffeeTest = {
         coffee: string;
-        bitterness: number;
-        acidity: number;
-        sweetness: number;
-        quality: number;
+        aroma: number;
+        acidity: string;
+        flavor: number;
+        enjoyment: number;
         tastingNotes: string[];
         body: string;
-        aftertaste: string;
+        aftertaste: number;
         timestamp: string;
     };
 
@@ -46,14 +46,17 @@
 
     let userId = $state(getStoredUserId());
 
-    let bitterness = $state(0);
-    let acidity = $state(0);
-    let sweetness = $state(0);
-    let quality = $state(0);
+    let aroma = $state(0);
+    let acidity = $state("No acidity");
+    let flavor = $state(0);
+    let enjoyment = $state(0);
     let tastingNotes = $state<string[]>([]);
+    let aftertaste = $state(0);
     
     const bodyOptions = ['Light', 'Medium', 'Heavy'];
     let body = $state(bodyOptions[0]);
+
+    const acidityOptions = ['No acidity', 'Pleasant acidity', 'Too acidic'];
 
     const coffeeOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     let coffee = $state('');
@@ -87,13 +90,12 @@
         body = selectedBody;
     }
 
-    const aftertasteOptions = ['No finish/quick finish', 'Unpleasant', 'Pleasant'];
-    let aftertaste = $state(aftertasteOptions[0]);
-
-    function setAftertaste(selectedAftertaste: string) {
-        aftertaste = selectedAftertaste;
+    function setAcidity(selectedAcidity: string) {
+        acidity = selectedAcidity;
     }
 
+    const aftertasteOptions = ['No finish/quick finish', 'Unpleasant', 'Pleasant'];
+    
     function setSelectedCoffee(selectedCoffee: string) {
         coffee = selectedCoffee;
         coffeeSelected = true;
@@ -102,40 +104,49 @@
         // If already tested, load the previous results
         if (completedTests[selectedCoffee]) {
             const test = completedTests[selectedCoffee];
-            bitterness = test.bitterness;
+            aroma = test.aroma;
             acidity = test.acidity;
-            sweetness = test.sweetness;
-            quality = test.quality;
+            flavor = test.flavor;
+            aftertaste = test.aftertaste;
+            enjoyment = test.enjoyment;
             tastingNotes = test.tastingNotes;
             body = test.body;
-            aftertaste = test.aftertaste;
         } else {
             // Reset values for a new test
-            bitterness = 0;
-            acidity = 0;
-            sweetness = 0;
-            quality = 0;
+            aroma = 0;
+            acidity = acidityOptions[0];
+            flavor = 0;
+            aftertaste = 0;
+            enjoyment = 0;
             tastingNotes = [];
             body = bodyOptions[0];
-            aftertaste = aftertasteOptions[0];
         }
     }
 
     // Reset form to initial state
     function resetForm() {
-        bitterness = 0;
-        acidity = 0;
-        sweetness = 0;
-        quality = 0;
+        aroma = 0;
+        acidity = acidityOptions[0];
+        flavor = 0;
+        aftertaste = 0;
+        enjoyment = 0;
         tastingNotes = [];
         body = bodyOptions[0];
         coffee = '';
         coffeeSelected = false;
-        aftertaste = aftertasteOptions[0];
     }
 
     async function handleSubmit() {
         if (isSubmitting || !coffeeSelected || isAlreadyTested) return;
+        
+        // Validate that enjoyment is rated (required field)
+        if (enjoyment === 0) {
+            toaster.error({
+                title: 'Required Field',
+                description: 'Please rate your overall enjoyment before submitting.'
+            });
+            return;
+        }
         
         isSubmitting = true;
         
@@ -145,13 +156,13 @@
                 const formData = {
                     userId,
                     coffee,
-                    bitterness,
-                    sweetness,
+                    aroma,
+                    flavor,
                     acidity,
                     body,
                     aftertaste,
                     tastingNotes,
-                    quality,
+                    enjoyment,
                     timestamp: new Date().toISOString()
                 };
                 
@@ -169,13 +180,13 @@
                     isSubmitting = false;
                     completedTests[coffee] = {
                         coffee,
-                        bitterness,
-                        sweetness,
+                        aroma,
+                        flavor,
                         acidity,
                         body,
                         aftertaste,
                         tastingNotes,
-                        quality,
+                        enjoyment,
                         timestamp: new Date().toISOString()
                     };
                     
@@ -229,7 +240,7 @@
         }
     }
     
-    let prefilledLink = $derived(`https://docs.google.com/forms/d/e/1FAIpQLSdUU_4nttpp5a15pp2T9bQqDAkiSSGaHx4MZJzvhp9r_zjmRA/viewform?usp=pp_url&entry.1794639938=${userId}&entry.1599024898=${coffee}&entry.1824965704=${bitterness}&entry.671551337=${sweetness}&entry.272037129=${acidity}&entry.1154026105=${body}&entry.832944999=${aftertaste}&entry.1596012011=${tastingNotes}&entry.354662826=${quality}`)
+    let prefilledLink = $derived(`https://docs.google.com/forms/d/e/1FAIpQLSdUU_4nttpp5a15pp2T9bQqDAkiSSGaHx4MZJzvhp9r_zjmRA/viewform?usp=pp_url&entry.1794639938=${userId}&entry.1599024898=${coffee}&entry.1824965704=${aroma}&entry.671551337=${flavor}&entry.272037129=${acidity}&entry.1154026105=${body}&entry.832944999=${aftertaste}&entry.1596012011=${tastingNotes}&entry.354662826=${enjoyment}`)
 
     function handleFlavorSelect(flavor: string) {
         if (!isAlreadyTested && !tastingNotes.includes(flavor)) {
@@ -276,24 +287,25 @@
                     </h2>
 
                     <div class="form-group">
-                        <label class="label" for="bitterness">
-                            Bitterness{bitterness > 0 ? ` ${bitterness}/5` : ''}
+                        <label class="label" for="aroma">
+                            Aroma{aroma > 0 ? ` ${aroma}/5` : ''}
                         </label>
-                        <Rating allowHalf value={bitterness} onValueChange={(e) => !isAlreadyTested && (bitterness = e.value)} />
+                        <Rating allowHalf value={aroma} onValueChange={(e) => !isAlreadyTested && (aroma = e.value)} />
+                    </div>
+                    
+                    
+                    <div class="form-group">
+                        <label class="label" for="flavor">
+                            Flavor{flavor > 0 ? ` ${flavor}/5` : ''}
+                        </label>
+                        <Rating allowHalf value={flavor} onValueChange={(e) => !isAlreadyTested && (flavor = e.value)} />
                     </div>
                     
                     <div class="form-group">
-                        <label class="label" for="acidity">
-                            Acidity{acidity > 0 ? ` ${acidity}/5` : ''}
+                        <label class="label" for="aftertaste">
+                            Aftertaste{aftertaste > 0 ? ` ${aftertaste}/5` : ''}
                         </label>
-                        <Rating allowHalf value={acidity} onValueChange={(e) => !isAlreadyTested && (acidity = e.value)} />
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="label" for="sweetness">
-                            Sweetness{sweetness > 0 ? ` ${sweetness}/5` : ''}
-                        </label>
-                        <Rating allowHalf value={sweetness} onValueChange={(e) => !isAlreadyTested && (sweetness = e.value)} />
+                        <Rating allowHalf value={aftertaste} onValueChange={(e) => !isAlreadyTested && (aftertaste = e.value)} />
                     </div>
                     
                     <div class="form-group">
@@ -311,44 +323,20 @@
                             {/each}
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label class="label" for="aftertaste">Aftertaste</label>
-                        <!-- Horizontal on medium/large screens, vertical on small screens -->
-                        <div class="hidden sm:block">
-                            <div class="flex gap-2">
-                                {#each aftertasteOptions as a}
-                                    <button 
-                                        type="button" 
-                                        class={`chip capitalize ${aftertaste === a ? 'preset-gradient' : 'preset-outlined-primary-500'}`} 
-                                        onclick={() => setAftertaste(a)}
-                                        disabled={isAlreadyTested}
-                                    >
-                                        <span>{a}</span>
-                                    </button>
-                                {/each}
-                            </div>
+                        <label class="label" for="acidity">Acidity</label>
+                        <div class="flex gap-2 flex-wrap">
+                            {#each acidityOptions as a}
+                                <button 
+                                    type="button" 
+                                    class={`chip capitalize ${acidity === a ? 'preset-gradient' : 'preset-outlined-primary-500'}`} 
+                                    onclick={() => !isAlreadyTested && setAcidity(a)}
+                                    disabled={isAlreadyTested}
+                                >
+                                    <span>{a}</span>
+                                </button>
+                            {/each}
                         </div>
-                        <!-- Vertical segment for small screens -->
-                        <div class="block sm:hidden">
-                            <Segment 
-                                value={aftertaste} 
-                                onValueChange={(e) => !isAlreadyTested && e.value && setAftertaste(e.value)} 
-                                orientation="vertical"
-                                disabled={isAlreadyTested}
-                            >
-                                {#each aftertasteOptions as a}
-                                    <Segment.Item value="{a}">{a}</Segment.Item>
-                                {/each}
-                            </Segment>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="label" for="quality">
-                            Overall Quality{quality > 0 ? ` ${quality}/5` : ''}
-                        </label>
-                        <Rating allowHalf value={quality} onValueChange={(e) => !isAlreadyTested && (quality = e.value)} />
                     </div>
                     
                     <div class="form-group">
@@ -361,14 +349,21 @@
                                 <FlavorWheel onFlavorSelect={handleFlavorSelect} />
                             </div>
                             <TagsInput 
-                            value={tastingNotes} 
+                            value={tastingNotes}
+                            editable={false}
                             onValueChange={(e) => !isAlreadyTested && (tastingNotes = e.value)}
                             placeholder="Add tasting note..."
                             disabled={isAlreadyTested}
                         />
                         </div>
                     </div>
-                    
+                    <div class="form-group">
+                        <label class="label" for="enjoyment">
+                            Overall Enjoyment{enjoyment > 0 ? ` ${enjoyment}/5` : ''} <span class="text-error-500">*</span>
+                        </label>
+                        <Rating allowHalf value={enjoyment} onValueChange={(e) => !isAlreadyTested && (enjoyment = e.value)} />
+                        <p class="text-sm text-error-500 mt-1">{enjoyment === 0 ? 'This field is required' : ''}</p>
+                    </div>
                     <div class="form-group">
                         <label class="label" for="changeCoffeeSelection">Change Coffee Selection</label>
                         <div class="flex gap-2 items-center">

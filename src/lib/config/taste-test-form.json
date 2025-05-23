@@ -1,0 +1,14 @@
+{
+  "formUrl": "https://docs.google.com/forms/d/e/1FAIpQLSdUU_4nttpp5a15pp2T9bQqDAkiSSGaHx4MZJzvhp9r_zjmRA/formResponse",
+  "fieldMappings": {
+    "userId": "entry.1794639938",
+    "coffee": "entry.1599024898",
+    "aroma": "entry.1824965704",
+    "flavor": "entry.671551337",
+    "acidity": "entry.272037129",
+    "body": "entry.1154026105",
+    "aftertaste": "entry.832944999",
+    "tastingNotes": "entry.1596012011",
+    "enjoyment": "entry.354662826"
+  }
+} 

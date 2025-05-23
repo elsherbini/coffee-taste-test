@@ -1,55 +1,45 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import formConfigData from '$lib/config/preference-survey-form.json';
+import type { FormConfig } from '$lib/types/form-config';
+
+// Cast the imported JSON to our FormConfig type
+const formConfig: FormConfig = formConfigData as FormConfig;
 
 export const POST: RequestHandler = async ({ request }) => {
     try {
         // Parse the incoming JSON data
         const formData = await request.json();
         
-        // Extract all the form fields
-        const { 
-            userId,
-            preference,
-            coffeeFrequency,
-            coffeesPerDay,
-            teasPerDay,
-            otherCaffeinatedDrinks,
-            blackCoffee,
-            drinkDecaf,
-            selectedAdditions,
-            selectedCoffeeTypes,
-            roastPreference,
-            selectedReasons,
-            selectedLimitReasons
-        } = formData;
-        
         // Function to format arrays for URL
         const formatArrayForUrl = (arr: string[]): string => {
             return Array.isArray(arr) ? arr.join(', ') : '';
         };
         
-        // Create the Google Forms URL with query parameters
-        const googleFormUrl = `https://docs.google.com/forms/d/e/1FAIpQLScEqPRm9qKfdgCpRz1WbjQoO5xLLRtwnp2eUMY5TXxeZGWklQ/formResponse`;
-        
-        // Prepare the form data for Google Forms
+        // Create URLSearchParams for Google Forms
         const params = new URLSearchParams();
-        params.append('entry.649444699', userId);
-        params.append('entry.1827359057', preference);
-        params.append('entry.70561061', coffeeFrequency);
-        params.append('entry.465256553', coffeesPerDay.toString());
-        params.append('entry.1432820961', teasPerDay.toString());
-        params.append('entry.1544061021', otherCaffeinatedDrinks.toString());
-        params.append('entry.2016949479', blackCoffee);
-        params.append('entry.461709431', drinkDecaf);
-        params.append('entry.270068699', formatArrayForUrl(selectedAdditions));
-        params.append('entry.1869977587', formatArrayForUrl(selectedCoffeeTypes));
-        params.append('entry.1035930586', roastPreference);
-        params.append('entry.558699320', formatArrayForUrl(selectedReasons));
-        params.append('entry.1572246610', formatArrayForUrl(selectedLimitReasons));
+        
+        // Process form data and map to Google Form entry IDs
+        Object.entries(formData).forEach(([field, value]) => {
+            const entryId = formConfig.fieldMappings[field];
+            if (!entryId) {
+                console.warn(`No mapping found for field: ${field}`);
+                return;
+            }
+            
+            // Handle arrays specially
+            if (Array.isArray(value)) {
+                params.append(entryId, formatArrayForUrl(value));
+            } else {
+                // Convert all other values to string
+                params.append(entryId, String(value));
+            }
+        });
+        
         params.append('submit', 'Submit');
         
-        // Send the data to Google Forms
-        const response = await fetch(googleFormUrl, {
+        // Send the data to Google Forms using the URL from config
+        const response = await fetch(formConfig.formUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
