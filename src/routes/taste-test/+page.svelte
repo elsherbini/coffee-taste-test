@@ -58,7 +58,7 @@
 
     const acidityOptions = ['No acidity', 'Pleasant acidity', 'Too acidic'];
 
-    const coffeeOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    const coffeeOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
     let coffee = $state('');
     let coffeeSelected = $state(false);
 

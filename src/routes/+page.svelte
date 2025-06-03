@@ -72,19 +72,27 @@
     <h1 class="text-3xl font-bold mb-8 text-center">Welcome to Coffee Survey</h1>
     
     <div class="flex flex-col gap-4">
-        <div class="card p-6 variant-filled-primary">
+        <div class="card p-6 preset-filled-primary">
             <h2 class="h3 mb-4">Coffee Taste Test</h2>
             <p class="mb-4">Rate the coffees we are tasting today</p>
-            <a href="{base}/taste-test" class="btn variant-filled-surface">
+            <a href="{base}/taste-test" class="btn preset-filled-surface">
                 Start Taste Test
             </a>
         </div>
         
-        <div class="card p-6 variant-filled-secondary">
+        <div class="card p-6 preset-filled-secondary">
             <h2 class="h3 mb-4">Coffee Preference Survey</h2>
             <p class="mb-4">Tell us about your general coffee preferences and habits.</p>
-            <a href="{base}/preference-survey" class="btn variant-filled-surface">
+            <a href="{base}/preference-survey" class="btn preset-filled-surface">
                 Start Preference Survey
+            </a>
+        </div>
+        
+        <div class="card p-6 preset-filled-tertiary">
+            <h2 class="h3 mb-4">View Results</h2>
+            <p class="mb-4">See how your coffee preferences compare to other participants.</p>
+            <a href="{base}/results" class="btn preset-filled-surface">
+                View Survey Results
             </a>
         </div>
     </div>
