@@ -138,13 +138,6 @@
                 }
               },
               {
-                name: 'Pomegranate',
-                value: 1,
-                itemStyle: {
-                  color: '#e65656'
-                }
-              },
-              {
                 name: 'Lychee',
                 value: 1,
                 itemStyle: {
@@ -177,13 +170,6 @@
                 value: 1,
                 itemStyle: {
                   color: '#f68a5c'
-                }
-              },
-              {
-                name: 'Pear',
-                value: 1,
-                itemStyle: {
-                  color: '#baa635'
                 }
               }
             ]
@@ -298,20 +284,6 @@
         },
         children: [
           {
-            name: 'Olive Oil',
-            value: 1,
-            itemStyle: {
-              color: '#a2b029'
-            }
-          },
-          {
-            name: 'Raw',
-            value: 1,
-            itemStyle: {
-              color: '#718933'
-            }
-          },
-          {
             name: 'Green',
             itemStyle: {
               color: '#3aa255'
@@ -367,13 +339,6 @@
                 }
               }
             ]
-          },
-          {
-            name: 'Beany',
-            value: 1,
-            itemStyle: {
-              color: '#5e9a80'
-            }
           }
         ]
       },
@@ -517,13 +482,6 @@
                 itemStyle: {
                   color: '#a1743b'
                 }
-              },
-              {
-                name: 'Brown, Roast',
-                value: 1,
-                itemStyle: {
-                  color: '#894810'
-                }
               }
             ]
           },
@@ -557,13 +515,6 @@
           color: '#ad213e'
         },
         children: [
-          {
-            name: 'Pungent',
-            value: 1,
-            itemStyle: {
-              color: '#794752'
-            }
-          },
           {
             name: 'Pepper',
             value: 1,
