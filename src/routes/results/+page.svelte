@@ -7,6 +7,7 @@
   import CoffeeQualityPlot from '$lib/components/CoffeeQualityPlot.svelte';
   import UserPersonalityInsights from '$lib/components/UserPersonalityInsights.svelte';
   import UserCoffeePreferencesDisplay from '$lib/components/UserCoffeePreferencesDisplay.svelte';
+  import BrewingMethodDistribution from '$lib/components/BrewingMethodDistribution.svelte';
   import { 
     fetchAllSurveyData, 
     getUserSurveyStatus, 
@@ -715,7 +716,6 @@
                               <!-- Coffee Quality Plot -->
               {#if coffeeQualityData.length > 0}
                 <div class="card p-6 mt-8">
-                  <h4 class="h4 mb-4 text-center">Coffee Quality Plot</h4>
                   <CoffeeQualityPlot qualityData={coffeeQualityData} />
                 </div>
               {/if}
@@ -793,7 +793,15 @@
               error={error}
             />
             
-
+            <!-- Brewing Method Analysis -->
+            <div class="mt-8">
+              <BrewingMethodDistribution 
+                {coffeeData}
+                userPreferences={userCoffeePreferences}
+                tasteTestData={surveyData?.tasteTestData || []}
+                loading={isLoading}
+              />
+            </div>
             
           {:else}
             <!-- Fallback for any unhandled tab values -->
