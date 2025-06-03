@@ -109,7 +109,6 @@
               <strong>${params.name}</strong><br/>
               Mean Quality: <strong>${item.mean_quality.toFixed(2)}</strong><br/>
               Confidence Interval: ${item.lower_confidence.toFixed(2)} - ${item.upper_confidence.toFixed(2)}<br/>
-              Range: ±${((item.upper_confidence - item.lower_confidence) / 2).toFixed(2)}
             `;
           }
           return params.name;
