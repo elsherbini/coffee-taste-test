@@ -946,14 +946,7 @@ export function getUserCoffeePreferences(tasteTestData: TasteTestResponse[]): Us
     }
 
     // If all ratings are the same, don't mark any as favorite or least favorite
-    if (maxRating === minRating) {
-      return {
-        userId,
-        favoriteCoffees: [],
-        leastFavoriteCoffees: [],
-        userRatings
-      };
-    }
+
 
     debugLog(`User ${userId} preferences:`, {
       favoriteCoffees,
@@ -1171,7 +1164,7 @@ function storeCoffeeData(coffeeData: CoffeeData[]): void {
   
   try {
     const now = Date.now();
-    const expiry = now + (24 * 60 * 60 * 1000); // 24 hours from now
+    const expiry = now + (30 * 1000); // 30 seconds
     
     localStorage.setItem(COFFEE_DATA_STORAGE_KEY, JSON.stringify(coffeeData));
     localStorage.setItem(COFFEE_DATA_EXPIRY_KEY, expiry.toString());
